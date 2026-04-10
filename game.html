@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shark Ocean Cleanup</title>
+    <style>
+        /* CSS STYLING */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; 
+        }
+
+        #game-container {
+            width: 800px;
+            height: 300px;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%); /* Underwater gradient */
+            position: relative;
+            border-bottom: 15px solid #d3b88e; /* Sandy seabed */
+            overflow: hidden; 
+        }
+
+        /* The Shark */
+        #shark {
+            width: 60px;
+            height: 50px;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            font-size: 50px; /* Sizes the emoji */
+            line-height: 50px;
+            text-align: center;
+            /* Flips the shark horizontally so it faces right */
+            transform: scaleX(-1); 
+        }
+
+        /* The jump animation class */
+        .jump {
+            animation: jump 0.6s linear;
+        }
+
+        /* Obstacles (Trash) */
+        .obstacle {
+            width: 40px;
+            position: absolute;
+            bottom: 0;
+            left: 800px; 
+            font-size: 40px; /* Sizes the emoji */
+            line-height: 40px;
+            text-align: center;
+        }
+
+        /* Animation for the jump */
+        @keyframes jump {
+            0% { bottom: 0; }
+            30% { bottom: 120px; } 
+            70% { bottom: 120px; } 
+            100% { bottom: 0; } 
+        }
+
+        /* Text styling */
+        #score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: #1a5276;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #game-over-msg {
+            display: none; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #e74c3c;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 3px solid #e74c3c;
+        }
+
+        #game-over-msg h1 { font-size: 48px; margin: 0 0 10px 0; }
+        #game-over-msg p { font-size: 20px; color: #333; margin-bottom: 20px; font-weight: bold; }
+        #game-over-msg button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #game-over-msg button:hover { background-color: #1a5276; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="score-display">Trash Avoided: 0</div>
+        <div id="shark">🦈</div>
+        
+        <div id="game-over-msg">
+            <h1>GAME OVER!</h1>
+            <p>You hit some trash! <br>Final Score: <span id="final-score">0</span></p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const shark = document.getElementById('shark');
+        const container = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const gameOverMsg = document.getElementById('game-over-msg');
+        const finalScore = document.getElementById('final-score');
+        
+        // Array of trash emojis for the obstacles
+        const trashTypes = ['🥤', '🛍️', '🥫', '🛢️'];
+
+        let score = 0;
+        let isGameOver = false;
+        let obstacleTimer;
+        
+        // Listen for spacebar to jump (Updated for better browser compatibility)
+        document.addEventListener('keydown', function(event) {
+            if ((event.code === 'Space' || event.key === ' ') && !isGameOver) {
+                event.preventDefault(); // Prevents page scrolling
+                jump();
+            }
+        });
+
+        // Jump function
+        function jump() {
+            if (!shark.classList.contains('jump')) {
+                shark.classList.add('jump');
+                setTimeout(function() {
+                    shark.classList.remove('jump');
+                }, 600);
+            }
+        }
+
+        // Create random trash obstacles
+        function createObstacle() {
+            if (isGameOver) return;
+            
+            let obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            
+            // Pick a random piece of trash from the array
+            let randomTrash = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+            obstacle.textContent = randomTrash;
+            
+            // Adjust hit box height based on emoji font size
+            obstacle.style.height = '40px'; 
+            
+            container.appendChild(obstacle);
+            
+            let obstacleLeft = 800; // Starting position
+            
+            let moveObstacle = setInterval(function() {
+                if (isGameOver) {
+                    clearInterval(moveObstacle);
+                    return;
+                }
+                
+                obstacleLeft -= 5; // Move left speed
+                obstacle.style.left = obstacleLeft + 'px';
+                
+                // --- COLLISION DETECTION ---
+                let sharkBottom = parseInt(window.getComputedStyle(shark).getPropertyValue("bottom"));
+                let obstacleHeight = parseInt(window.getComputedStyle(obstacle).getPropertyValue("height"));
+                
+                // If the obstacle is within the shark's horizontal space AND the shark is lower than the obstacle
+                if (obstacleLeft > 50 && obstacleLeft < 110 && sharkBottom < obstacleHeight) {
+                    endGame();
+                    clearInterval(moveObstacle);
+                }
+                
+                // Remove obstacle when it goes off-screen
+                if (obstacleLeft < -50) {
+                    clearInterval(moveObstacle);
+                    container.removeChild(obstacle);
+                    if (!isGameOver) {
+                        score++;
+                        scoreDisplay.textContent = 'Trash Avoided: ' + score;
+                    }
+                }
+                
+            }, 20); // Move every 20ms
+            
+            // Generate next obstacle after a random time (between 1.5s and 2.5s)
+            let nextObstacleTime = Math.floor(Math.random() * 1001) + 1500;
+            obstacleTimer = setTimeout(createObstacle, nextObstacleTime);
+        }
+
+        function endGame() {
+            isGameOver = true;
+            clearTimeout(obstacleTimer); 
+            gameOverMsg.style.display = 'block'; 
+            finalScore.textContent = score; 
+        }
+
+        function resetGame() {
+            isGameOver = false;
+            score = 0;
+            scoreDisplay.textContent = 'Trash Avoided: 0';
+            gameOverMsg.style.display = 'none'; 
+            
+            // Remove all existing trash from the screen
+            const currentObstacles = document.querySelectorAll('.obstacle');
+            currentObstacles.forEach(obs => obs.remove());
+            
+            // Restart obstacle creation
+            createObstacle();
+        }
+
+        // Start the game by spawning the first obstacle
+        createObstacle();
+
+    </script>
+</body>
+</html>
