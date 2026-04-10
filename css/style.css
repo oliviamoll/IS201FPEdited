@@ -1,0 +1,126 @@
+/* overall page styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #4a4a4a;
+    line-height: 1.6;
+    margin: 0;
+    padding: 40px 20px;
+}
+
+/* backgrounds for each page */
+.me-page {
+    background-color: #ffadb9;
+}
+
+.photo-page {
+    background-color: white;
+}
+
+/* --- THE MAIN CONTAINER --- */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Headings & Text --- */
+h1 {
+    text-align: center;
+    color: #d88c9a; 
+    border-bottom: 2px solid #f4e1e3;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
+h2 {
+    color: #5d7b80; 
+    margin-top: 40px;
+    font-size: 1.8em;
+}
+
+h3 {
+    color: #888888;
+    font-size: 1.2em;
+    margin-top: 30px;
+}
+
+/* --- images & Videos --- */
+img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+    margin: 10px 15px 10px 0;
+    transition: transform 0.3s ease; 
+}
+
+/* mouse hover */
+img:hover {
+    transform: translateY(-5px);
+}
+
+iframe {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: 15px 0;
+    display: block;
+}
+
+/* --- LISTS --- */
+ol {
+    background-color: #f9f9f9;
+    padding: 25px 25px 25px 45px;
+    border-radius: 10px;
+    border-left: 5px solid #d88c9a;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+li strong {
+    color: #5d7b80;
+    font-size: 1.1em;
+}
+
+ul {
+    margin-top: 5px;
+}
+
+/* --- LINKS --- */
+a {
+    color: #d88c9a;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #5d7b80;
+    text-decoration: underline;
+}
+
+/* --- TABLEAU stuff --- */
+.tableau-container {
+    background-color: #fdfdfd;
+    border: 1px solid #eeeeee;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 40px;
+}
+
+/* --- GALLERY POSITIONING --- */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.gallery-item {
+    flex: 0 1 300px;
+    text-align: center;
+    margin-bottom: 20px;
+}
